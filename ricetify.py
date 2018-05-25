@@ -14,6 +14,7 @@ OS = sys.platform
 if OS == "linux":
     SPOTIFY_PATH = "/usr/share/spotify"
 elif OS == "darwin":
+    # TODO find where the folder is
     SPOTIFY_PATH = ""
 elif OS == "win32":
     SPOTIFY_PATH = os.path.join(os.getenv('APPDATA'), "Spotify")
@@ -59,6 +60,7 @@ def get_spotify_version():
         ver = subprocess.run(["spotify", "--version"], stdout=subprocess.PIPE)
         return str(ver.stdout.split()[2][:-1])
     elif OS == 'darwin':
+        # TODO find out how to do this
         pass
     elif OS == 'win32':
         with open(os.path.join(SPOTIFY_PATH, "prefs")) as prefs:
@@ -66,123 +68,87 @@ def get_spotify_version():
 
 
 def convert_css(css_data):
-    css_data = css_data.replace("#1ed660", "var(--modspotify_sidebar_indicator_and_hover_button_bg)")
-    css_data = css_data.replace("#1ed760", "var(--modspotify_sidebar_indicator_and_hover_button_bg)")
-
-    css_data = css_data.replace("#1db954", "var(--modspotify_indicator_fg_and_button_bg)")
-    css_data = css_data.replace("#1df369", "var(--modspotify_indicator_fg_and_button_bg)")
-    css_data = css_data.replace("#1df269", "var(--modspotify_indicator_fg_and_button_bg)")
-    css_data = css_data.replace("#1cd85e", "var(--modspotify_indicator_fg_and_button_bg)")
-    css_data = css_data.replace("#1bd85e", "var(--modspotify_indicator_fg_and_button_bg)")
-
-    css_data = css_data.replace("#18ac4d", "var(--modspotify_selected_button)")
-    css_data = css_data.replace("#18ab4d", "var(--modspotify_selected_button)")
-
-    css_data = css_data.replace("#179443", "var(--modspotify_pressing_button_bg)")
-    css_data = css_data.replace("#14833b", "var(--modspotify_pressing_button_bg)")
-
-    css_data = css_data.replace("#282828", "var(--modspotify_main_bg)")
-    css_data = css_data.replace("#121212", "var(--modspotify_main_bg)")
-    css_data = css_data.replace("#999999", "var(--modspotify_main_bg)")
-    css_data = css_data.replace("#606060", "var(--modspotify_main_bg)")
-
-    css_data = re.sub(r'rgba\(18, 18, 18, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(18, 19, 20, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(80, 55, 80, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(40, 40, 40, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(40,40,40,([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)", css_data)
-    css_data = re.sub(r'rgba\(24, 24, 24, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(18, 19, 20, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = css_data.replace("#181818", "var(--modspotify_sidebar_and_player_bg)")
-    css_data = css_data.replace("#000000", "var(--modspotify_sidebar_and_player_bg)")
-
-    css_data = css_data.replace("#3f3f3f", "var(--modspotify_scrollbar_fg_and_selected_row_bg)")
-    css_data = css_data.replace("#535353", "var(--modspotify_scrollbar_fg_and_selected_row_bg)")
-    css_data = css_data.replace("#333333", "var(--modspotify_scrollbar_fg_and_selected_row_bg)")
-
-    css_data = css_data.replace("#404040", "var(--modspotify_slider_bg)")
-
-    css_data = css_data.replace("#000011", "var(--modspotify_sidebar_and_player_bg)")
-    css_data = css_data.replace("#0a1a2d", "var(--modspotify_sidebar_and_player_bg)")
-
-    css_data = css_data.replace("#ffffff", "var(--modspotify_main_fg)")
-
-    css_data.replace("#f8f8f7", "var(--modspotify_pressing_fg)")
-    css_data = css_data.replace("#fcfcfc", "var(--modspotify_pressing_fg)")
-    css_data = css_data.replace("#d9d9d9", "var(--modspotify_pressing_fg)")
-    css_data = css_data.replace("#cdcdcd", "var(--modspotify_pressing_fg)")
-    css_data = css_data.replace("#e6e6e6", "var(--modspotify_pressing_fg)")
-    css_data = css_data.replace("#e5e5e5", "var(--modspotify_pressing_fg)")
-
-    css_data = css_data.replace("#adafb2", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#c8c8c8", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#a0a0a0", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#bec0bb", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#bababa", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#b3b3b3", "var(--modspotify_secondary_fg)")
-    css_data = css_data.replace("#c0c0c0", "var(--modspotify_secondary_fg)")
-
-    css_data = re.sub(r'rgba\(179, 179, 179, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_secondary_fg),\1)", css_data)
-
-    css_data = css_data.replace("#cccccc", "var(--modspotify_pressing_button_fg)")
-    css_data = css_data.replace("#ededed", "var(--modspotify_pressing_button_fg)")
-
-    css_data = css_data.replace("#4687d6", "var(--modspotify_miscellaneous_bg)")
-    css_data = re.sub(r'rgba\(70, 135, 214, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_bg),\1)", css_data)
-
-    css_data = css_data.replace("#2e77d0", "var(--modspotify_miscellaneous_hover_bg)")
-    css_data = re.sub(r'rgba\(51,153,255,([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_hover_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(30,50,100,([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_hover_bg),\1)", css_data)
-
-    css_data = re.sub(r'rgba\(24, 24, 24, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(25,20,20,([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)", css_data)
-
-    css_data = re.sub(r'rgba\(160, 160, 160, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_pressing_button_fg),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(255, 255, 255, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_pressing_button_fg),\1)",
-                      css_data)
-
-    css_data = css_data.replace("#ddd;", "var(--modspotify_pressing_button_fg);")
-
-    css_data = css_data.replace("#000;", "var(--modspotify_sidebar_and_player_bg);")
-    css_data = css_data.replace("#000 ", "var(--modspotify_sidebar_and_player_bg) ")
-
-    css_data = css_data.replace("#333;", "var(--modspotify_scrollbar_fg_and_selected_row_bg);")
-    css_data = css_data.replace("#333 ", "var(--modspotify_scrollbar_fg_and_selected_row_bg) ")
-
-    css_data = css_data.replace("#444;", "var(--modspotify_slider_bg);")
-    css_data = css_data.replace("#444 ", "var(--modspotify_slider_bg) ")
-
-    css_data = css_data.replace("#fff;", "var(--modspotify_main_fg);")
-    css_data = css_data.replace("#fff ", "var(--modspotify_main_fg) ")
-
-    css_data = css_data.replace(" black;", " var(--modspotify_sidebar_and_player_bg);")
-    css_data = css_data.replace(" black ", " var(--modspotify_sidebar_and_player_bg) ")
-
-    css_data = css_data.replace(" gray ", " var(--modspotify_main_bg) ")
-    css_data = css_data.replace(" gray;", " var(--modspotify_main_bg);")
-
-    css_data = css_data.replace(" lightgray ", " var(--modspotify_pressing_button_fg) ")
-    css_data = css_data.replace(" lightgray;", " var(--modspotify_pressing_button_fg);")
-
-    css_data = css_data.replace(" white;", " var(--modspotify_main_fg);")
-    css_data = css_data.replace(" white ", " var(--modspotify_main_fg) ")
-
-    css_data = re.sub(r'rgba\(0, 0, 0, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_cover_overlay_and_shadow),\1)",
-                      css_data)
-    css_data = re.sub(r'rgba\(0,0,0,([\d.]+)\)', r"rgba(var(--modspotify_rgb_cover_overlay_and_shadow),\1)", css_data)
-
-    css_data = css_data.replace("#fff", "var(--modspotify_main_fg)")
-
-    css_data = css_data.replace("#000", "var(--modspotify_sidebar_and_player_bg)")
+    replacements = [
+        ("#1ed660", "var(--modspotify_sidebar_indicator_and_hover_button_bg)"),
+        ("#1ed760", "var(--modspotify_sidebar_indicator_and_hover_button_bg)"),
+        ("#1db954", "var(--modspotify_indicator_fg_and_button_bg)"),
+        ("#1df369", "var(--modspotify_indicator_fg_and_button_bg)"),
+        ("#1df269", "var(--modspotify_indicator_fg_and_button_bg)"),
+        ("#1cd85e", "var(--modspotify_indicator_fg_and_button_bg)"),
+        ("#1bd85e", "var(--modspotify_indicator_fg_and_button_bg)"),
+        ("#18ac4d", "var(--modspotify_selected_button)"),
+        ("#18ab4d", "var(--modspotify_selected_button)"),
+        ("#179443", "var(--modspotify_pressing_button_bg)"),
+        ("#14833b", "var(--modspotify_pressing_button_bg)"),
+        ("#282828", "var(--modspotify_main_bg)"),
+        ("#121212", "var(--modspotify_main_bg)"),
+        ("#999999", "var(--modspotify_main_bg)"),
+        ("#606060", "var(--modspotify_main_bg)"),
+        ("#181818", "var(--modspotify_sidebar_and_player_bg)"),
+        ("#000000", "var(--modspotify_sidebar_and_player_bg)"),
+        ("#3f3f3f", "var(--modspotify_scrollbar_fg_and_selected_row_bg)"),
+        ("#535353", "var(--modspotify_scrollbar_fg_and_selected_row_bg)"),
+        ("#333333", "var(--modspotify_scrollbar_fg_and_selected_row_bg)"),
+        ("#404040", "var(--modspotify_slider_bg)"),
+        ("#000011", "var(--modspotify_sidebar_and_player_bg)"),
+        ("#0a1a2d", "var(--modspotify_sidebar_and_player_bg)"),
+        ("#ffffff", "var(--modspotify_main_fg)"),
+        ("#f8f8f7", "var(--modspotify_pressing_fg)"),
+        ("#fcfcfc", "var(--modspotify_pressing_fg)"),
+        ("#d9d9d9", "var(--modspotify_pressing_fg)"),
+        ("#cdcdcd", "var(--modspotify_pressing_fg)"),
+        ("#e6e6e6", "var(--modspotify_pressing_fg)"),
+        ("#e5e5e5", "var(--modspotify_pressing_fg)"),
+        ("#adafb2", "var(--modspotify_secondary_fg)"),
+        ("#c8c8c8", "var(--modspotify_secondary_fg)"),
+        ("#a0a0a0", "var(--modspotify_secondary_fg)"),
+        ("#bec0bb", "var(--modspotify_secondary_fg)"),
+        ("#bababa", "var(--modspotify_secondary_fg)"),
+        ("#b3b3b3", "var(--modspotify_secondary_fg)"),
+        ("#c0c0c0", "var(--modspotify_secondary_fg)"),
+        ("#cccccc", "var(--modspotify_pressing_button_fg)"),
+        ("#ededed", "var(--modspotify_pressing_button_fg)"),
+        ("#4687d6", "var(--modspotify_miscellaneous_bg)"),
+        ("#2e77d0", "var(--modspotify_miscellaneous_hover_bg)"),
+        ("#ddd;", "var(--modspotify_pressing_button_fg);"),
+        ("#000;", "var(--modspotify_sidebar_and_player_bg);"),
+        ("#000 ", "var(--modspotify_sidebar_and_player_bg)"),
+        ("#333;", "var(--modspotify_scrollbar_fg_and_selected_row_bg);"),
+        ("#333 ", "var(--modspotify_scrollbar_fg_and_selected_row_bg)"),
+        ("#444;", "var(--modspotify_slider_bg);"),
+        ("#444 ", "var(--modspotify_slider_bg)"),
+        ("#fff;", "var(--modspotify_main_fg);"),
+        ("#fff ", "var(--modspotify_main_fg)"),
+        (" black;", " var(--modspotify_sidebar_and_player_bg);"),
+        (" black ", " var(--modspotify_sidebar_and_player_bg)"),
+        (" gray ", " var(--modspotify_main_bg)"),
+        (" gray;", " var(--modspotify_main_bg);"),
+        (" lightgray ", " var(--modspotify_pressing_button_fg)"),
+        (" lightgray;", " var(--modspotify_pressing_button_fg);"),
+        (" white;", " var(--modspotify_main_fg);"),
+        (" white ", " var(--modspotify_main_fg)"),
+        ("#fff", "var(--modspotify_main_fg)"),
+        ("#000", "var(--modspotify_sidebar_and_player_bg)"),
+        (r'rgba\(18, 18, 18, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(18, 19, 20, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(80, 55, 80, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(40, 40, 40, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(40,40,40,([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(24, 24, 24, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(18, 19, 20, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(179, 179, 179, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_secondary_fg),\1)"),
+        (r'rgba\(70, 135, 214, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_bg),\1)"),
+        (r'rgba\(51,153,255,([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_hover_bg),\1)"),
+        (r'rgba\(30,50,100,([\d.]+)\)', r"rgba(var(--modspotify_rgb_miscellaneous_hover_bg),\1)"),
+        (r'rgba\(24, 24, 24, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(25,20,20,([\d.]+)\)', r"rgba(var(--modspotify_rgb_sidebar_and_player_bg),\1)"),
+        (r'rgba\(160, 160, 160, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_pressing_button_fg),\1)"),
+        (r'rgba\(255, 255, 255, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_pressing_button_fg),\1)"),
+        (r'rgba\(0, 0, 0, ([\d.]+)\)', r"rgba(var(--modspotify_rgb_cover_overlay_and_shadow),\1)"),
+        (r'rgba\(0,0,0,([\d.]+)\)', r"rgba(var(--modspotify_rgb_cover_overlay_and_shadow),\1)")
+    ]
+    for old, new in replacements:
+        css_data = re.sub(old, new, css_data)
 
     return css_data
 
@@ -218,7 +184,7 @@ def process_css(folder_path):
     if os.path.isdir(css_dir):
         for css in glob.glob(os.path.join(css_dir, "*.css")):
             css_filename = os.path.basename(css)
-            debug_print(f"\t{css_filename}", 2)
+            debug_print(f"\t\t{css_filename}", 3)
             if css_filename == "glue.css" and processed_glue is not None:
                 css_data = processed_glue
             else:
@@ -233,7 +199,7 @@ def process_css(folder_path):
 def process_html(folder_path):
     for html in glob.glob(os.path.join(folder_path, "*.html")):
         html_filename = os.path.basename(html)
-        debug_print(f"\t{html_filename}", 2)
+        debug_print(f"\t\t{html_filename}", 3)
         with open(html) as html_file:
             html_data = html_file.read()
         html_data = html_data.replace('</head>',
@@ -243,30 +209,47 @@ def process_html(folder_path):
             html_file.write(html_data)
 
 
-def replace_in_file(file_path, pattern, repl):
+def replace_in_file(folder_path, filename, js_filename, pattern, repl, count=0):
+    file_path = os.path.join(folder_path, filename, js_filename)
     with open(file_path) as file:
         file_data = file.read()
     with open(file_path, "w") as file:
-        file.write(re.sub(pattern, repl, file_data))
+        file.write(re.sub(pattern, repl, file_data, count=count))
 
 
-def mod_js(folder_path, filename):
+def mod_js(folder_path):
     js_options = CONFIG['Javascript']
-    for js in glob.glob(os.path.join(folder_path, "*.js")):
-        js_filename = os.path.basename(js)
-        debug_print(f"\t{js_filename}", 2)
-        if filename == "settings.spa" and js_filename == "bundle.js":
-            if js_options.getboolean('enabled_dev_tools'):
-                debug_print("\tEnabled dev tools", 1)
-                replace_in_file(js, r"(const isEmployee = ).*;", r"\1true;")
-        elif filename == "zlink.spa" and js_filename == "main.bundle.js":
-            if js_options.getboolean('enabled_home'):
-                debug_print("\tEnabled home", 1)
-                replace_in_file(js, r"this\._initialState\.isHomeEnabled", r"true")
-                replace_in_file(js, r"isHomeEnabled(\?void 0:_flowControl)", r"true\1")
-            if js_options.getboolean('enabled_radio'):
-                debug_print("\tEnabled radio", 1)
-                replace_in_file(js, r'\(0,_productState\.hasValue\)\("radio","1"\)', r"true")
+    if js_options.getboolean('enabled_dev_tools'):
+        debug_print("\tEnabled dev tools", 1)
+        replace_in_file(folder_path, "settings.spa", "bundle.js", r"(const isEmployee = ).*;", r"\1true;")
+    if js_options.getboolean('enabled_home'):
+        debug_print("\tEnabled home", 1)
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r"this\._initialState\.isHomeEnabled", r"true")
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r"isHomeEnabled(\?void 0:_flowControl)", r"true\1", 1)
+    if js_options.getboolean('enabled_radio'):
+        debug_print("\tEnabled radio", 1)
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r'\(0,_productState\.hasValue\)\("radio","1"\)',
+                        r"true")
+    mod_options = r''
+    if js_options.getboolean('enabled_lyrics') and js_options.getboolean('lyrics_always_show'):
+        debug_print("\tEnabled lyrics and always show button", 1)
+        replace_in_file(folder_path, 'lyrics.spa', 'bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ', 1)
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*?\)',
+                        r'\1true', 1)
+        mod_options = r'trackControllerOpts.noService = false;\n'
+    elif js_options.getboolean('enabled_lyrics'):
+        debug_print("\tEnabled lyrics", 1)
+        replace_in_file(folder_path, 'lyrics.spa', 'bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ', 1)
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r'(lyricsEnabled\(trackHasLyrics)&&\(.*?\)',
+                        r'\1', 1)
+        mod_options = r'trackControllerOpts.noService = false;\n'
+    elif js_options.getboolean('lyrics_always_show'):
+        debug_print("\tEnabled always show lyrics button", 1)
+        replace_in_file(folder_path, 'zlink.spa', 'main.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*\)',
+                        r'\1true', 1)
+    if mod_options != "":
+        replace_in_file(folder_path, 'lyrics.spa', 'bundle.js', r'(trackController\.init\(trackControllerOpts\))',
+                        mod_options+r"\1", 1)
 
 
 def make_backup(backup_dir):
@@ -284,14 +267,6 @@ def make_backup(backup_dir):
             shutil.copy2(file, backup_dir)
         with open(backup_version_path, "w") as version_file:
             version_file.write(version)
-
-
-def cleanup(folder_path):
-    for root, dirs, files in os.walk(folder_path):
-        for f in files:
-            os.remove(os.path.join(root, f))
-        for d in dirs:
-            shutil.rmtree(os.path.join(root, d))
 
 
 class FullPaths(argparse.Action):
@@ -319,7 +294,7 @@ def main():
     parser = argparse.ArgumentParser(description="Rice spotify")
     parser.add_argument('-u', '--user-css', help="Apply custom CSS", action=FullPaths, type=is_file)
     parser.add_argument('-o', '--output', help='Output folder', action=FullPaths, type=is_folder)
-    parser.add_argument('-v', '--verbosity', help='Increase output verbosity', type=int, choices=[0, 1, 2], default=0)
+    parser.add_argument('-v', '--verbosity', help='Increase output verbosity', type=int, choices=[0, 1, 2, 3], default=0)
     parser.add_argument('-c', '--config', help="Load a config file", action=FullPaths, type=is_file)
     args = parser.parse_args()
 
@@ -339,33 +314,38 @@ def main():
 
     make_backup(backup_dir)
 
+    # Extract all files and process css and html (javascript involved modifying many files)
+    debug_print("Extracting files", 0)
     for file in glob.glob(os.path.join(backup_dir, '*.spa')):
         filename = os.path.basename(file)
-        debug_print(f"Processing: {filename}", 1)
+        debug_print(f"\tExtracting: {filename}", 2)
 
-        # Extract file
+        sub_dir_path = os.path.join(temp_dir_path, filename)
+
         with zipfile.ZipFile(file, "r") as spa:
-            spa.extractall(path=temp_dir_path)
+            spa.extractall(path=sub_dir_path)
 
-        process_css(temp_dir_path)
+        process_css(sub_dir_path)
 
-        process_html(temp_dir_path)
+        process_html(sub_dir_path)
 
-        inject_css(temp_dir_path, user_css=args.user_css)
+        inject_css(sub_dir_path, user_css=args.user_css)
 
-        if 'Javascript' in CONFIG:
-            mod_js(temp_dir_path, filename)
+    debug_print('Modifying JS', 0)
+    if 'Javascript' in CONFIG:
+        mod_js(temp_dir_path)
 
+    # Recompile and move to output
+    debug_print("Compiling files", 0)
+    for folder in glob.glob(os.path.join(temp_dir_path, '*.spa')):
+        folder_name = os.path.basename(folder)
+        debug_print(f"\tCompiling {os.path.basename(folder_name)}", 2)
         if args.output:
-            output_file = os.path.join(args.output, filename)
+            output_file = os.path.join(args.output, folder_name)
         else:
-            output_file = os.path.join(os.curdir, filename)
-
-        shutil.make_archive(output_file, "zip", temp_dir_path)
+            output_file = os.path.join(os.curdir, folder_name)
+        shutil.make_archive(output_file, "zip", folder)
         shutil.move(output_file + ".zip", output_file)
-
-        # Empty directory for next loop
-        cleanup(temp_dir_path)
 
 
 if __name__ == "__main__":
