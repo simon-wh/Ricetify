@@ -381,6 +381,14 @@ def is_folder(dir_name):
         return dir_name
 
 
+def is_app_folder(folder_name):
+    if re.fullmatch(r'[a-z]+', folder_name) is None:
+        raise argparse.ArgumentTypeError("App folder must be all lowercase letters")
+    else:
+        is_folder(folder_name)
+        return folder_name
+
+
 def main():
     global GLOBAL_VERBOSITY
 
@@ -391,6 +399,7 @@ def main():
                         default=0)
     parser.add_argument('-c', '--config', help="Load a config file", action=FullPaths, type=is_file)
     parser.add_argument('-e', '--extensions', help="A list of extensions to inject", nargs='+', type=is_file)
+    parser.add_argument('-a', '--apps', help='A list of apps to inject', nargs='+', type=is_app_folder)
     args = parser.parse_args()
 
     GLOBAL_VERBOSITY = args.verbosity
@@ -406,7 +415,7 @@ def main():
 
     make_backup(backup_dir)
 
-    # Extract all files and process css and html (javascript involved modifying many files)
+    # Extract all files and process css and html (javascript involves modifying many files)
     debug_print("Extracting files", 0)
     for file in glob.glob(os.path.join(backup_dir, '*.spa')):
         filename = os.path.basename(file)
