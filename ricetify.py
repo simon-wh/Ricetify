@@ -210,7 +210,7 @@ def process_html(folder_path, extensions):
         html_data = html_data.replace('</head>', '<link rel="stylesheet" class="userCSS" href="css/user.css"></head>')
         if 'zlink' in folder_path:
             html_data = html_data.replace('</body>', '<script src="/jquery-3.3.1.min.js"></script></body>')
-            for ext in (extensions if not None else []):
+            for ext in (extensions if extensions is not None else []):
                 html_data = html_data.replace('</body>', f'<script src="/{os.path.basename(ext)}"></script></body>')
         with open(html, "w") as html_file:
             html_file.write(html_data)
@@ -341,8 +341,39 @@ def mod_js(extensions):
     replace_in_file('zlink.spa', 'main.bundle.js', r'(var _spotifyCosmosApi2=_interop.*?;)',
                     r'\1chrome.cosmosAPI=_spotifyCosmosApi2.default;')
 
-    for ext in (extensions if not None else []):
+    for ext in (extensions if extensions is not None else []):
         inject_js('zlink.spa', ext)
+
+
+def inject_apps(app_page_logger, app_menu_items):
+    replace_in_file('zlink.spa', 'main.bundle.js', r'(PAGE_LOGGER_MAP={)', rf'\1{app_page_logger}')
+    replace_in_file('zlink.spa', 'main.bundle.js', r'(return _pageIdentifiers2\.default\[normalizedAppId\]\|\|)('
+                                                   r'_pageIdentifiers\.default\.unknownUncovered)',
+                    r'\1normalizedAppId||\2')
+    replace_in_file('zlink.spa', 'main.bundle.js', r'(NavigationBar\.prototype\._initCollectionSection=function\(\){)',
+                    rf'\1this.sections.push({{id:"custom-apps",label:"Your Apps",items: ko.observableArray(['
+                    rf'{app_menu_items}])}});')
+
+
+def get_app_name(app_dir):
+    with open(os.path.join(app_dir, "index.html")) as file:
+        index = file.read()
+    reg = re.search(r'// NAME:(.*?)\n', index)
+    return reg.group(1).strip()
+
+
+def create_apps(app_dirs, output):
+    app_page_logger, app_menu_items = "", ""
+    for app_dir in app_dirs:
+        base = os.path.basename(app_dir)
+        destination = os.path.join(output, base)
+        if os.path.exists(destination):
+            shutil.rmtree(destination)
+        shutil.copytree(app_dir, destination)
+        app_page_logger += f'"{base}":"{base}",'
+        app_menu_items += f'new MenuItem("{get_app_name(app_dir)}","spotify:app:{base}",' \
+                          f'{{activeRegexp:/spotify:app:{base}(\\:.*)?$/}}),'
+    inject_apps(app_page_logger, app_menu_items)
 
 
 def make_backup(backup_dir):
@@ -382,7 +413,7 @@ def is_folder(dir_name):
 
 
 def is_app_folder(folder_name):
-    if re.fullmatch(r'[a-z]+', folder_name) is None:
+    if re.fullmatch(r'[a-z]+', os.path.basename(folder_name)) is None:
         raise argparse.ArgumentTypeError("App folder must be all lowercase letters")
     else:
         is_folder(folder_name)
@@ -400,6 +431,7 @@ def main():
     parser.add_argument('-c', '--config', help="Load a config file", action=FullPaths, type=is_file)
     parser.add_argument('-e', '--extensions', help="A list of extensions to inject", nargs='+', type=is_file)
     parser.add_argument('-a', '--apps', help='A list of apps to inject', nargs='+', type=is_app_folder)
+    parser.add_argument('-r', '--restore', help='Restore spotify to default', action="store_true")
     args = parser.parse_args()
 
     GLOBAL_VERBOSITY = args.verbosity
@@ -426,15 +458,24 @@ def main():
         with zipfile.ZipFile(file, "r") as spa:
             spa.extractall(path=sub_dir_path)
 
-        process_css(sub_dir_path)
+        if not args.restore:
+            process_css(sub_dir_path)
 
-        process_html(sub_dir_path, args.extensions)
+            process_html(sub_dir_path, args.extensions)
 
-        inject_css(sub_dir_path, user_css=args.user_css)
+            inject_css(sub_dir_path, user_css=args.user_css)
 
-    debug_print('Modifying JS', 0)
-    if 'Javascript' in CONFIG:
-        mod_js(args.extensions)
+    if not args.restore:
+        debug_print('Modifying JS', 0)
+        if 'Javascript' in CONFIG:
+            mod_js(args.extensions)
+
+        if args.apps:
+            debug_print('Adding apps', 0)
+            if args.output:
+                create_apps(args.apps, args.output)
+            else:
+                create_apps(args.apps, os.curdir)
 
     # Recompile and move to output
     debug_print("Compiling files", 0)
