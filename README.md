@@ -1,6 +1,6 @@
 # Ricetify
 
-A CLI and x-plat (kinda) interface for modifying spotify. 
+A CLI and x-plat (kinda) interface for modifying spotify. Compatible with [spicetify](https://github.com/khanhas/Spicetify).
 
 ## Usage
 

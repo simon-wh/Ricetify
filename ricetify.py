@@ -359,7 +359,10 @@ def get_app_name(app_dir):
     with open(os.path.join(app_dir, "index.html")) as file:
         index = file.read()
     reg = re.search(r'// NAME:(.*?)\n', index)
-    return reg.group(1).strip()
+    if reg:
+        return reg.group(1).strip()
+    else:
+        return os.path.basename(app_dir)
 
 
 def create_apps(app_dirs, output):
