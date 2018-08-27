@@ -62,8 +62,8 @@ def hex_to_rgb(hex_code):
 
 def get_spotify_version():
     if OS == 'linux':
-        ver = subprocess.run(["spotify", "--version"], stdout=subprocess.PIPE)
-        return str(ver.stdout.split()[2][:-1])
+        #ver = subprocess.run(["spotify", "--version"], stdout=subprocess.PIPE)
+        return "1.0.88.353.g15c26ea1"
     elif OS == 'darwin':
         # TODO find out how to do this
         pass
@@ -232,34 +232,34 @@ def mod_js(extensions):
     js_options = CONFIG['Javascript']
     if js_options.getboolean('enabled_dev_tools'):
         debug_print("\tEnabled dev tools", 1)
-        replace_in_file("settings.spa", "bundle.js", r"(const isEmployee = ).*;", r"\1true;")
+        replace_in_file("settings.spa", "settings.bundle.js", r"(const isEmployee = ).*;", r"\1true;")
     if js_options.getboolean('enabled_home'):
         debug_print("\tEnabled home", 1)
-        replace_in_file('zlink.spa', 'main.bundle.js', r"this\._initialState\.isHomeEnabled", r"true")
-        replace_in_file('zlink.spa', 'main.bundle.js', r"isHomeEnabled(\?void 0:_flowControl)", r"true\1")
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r"this\._initialState\.isHomeEnabled", r"true")
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r"isHomeEnabled(\?void 0:_flowControl)", r"true\1")
     if js_options.getboolean('enabled_radio'):
         debug_print("\tEnabled radio", 1)
-        replace_in_file('zlink.spa', 'main.bundle.js', r'\(0,_productState\.hasValue\)\("radio","1"\)', r"true")
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r'\(0,_productState\.hasValue\)\("radio","1"\)', r"true")
     mod_options = r''
     if js_options.getboolean('enabled_lyrics') and js_options.getboolean('lyrics_always_show'):
         debug_print("\tEnabled lyrics and always show button", 1)
-        replace_in_file('lyrics.spa', 'bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ')
-        replace_in_file('zlink.spa', 'main.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*?\)', r'\1true')
+        replace_in_file('lyrics.spa', 'lyrics.bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ')
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*?\)', r'\1true')
         mod_options = r'trackControllerOpts.noService = false;\n'
     elif js_options.getboolean('enabled_lyrics'):
         debug_print("\tEnabled lyrics", 1)
-        replace_in_file('lyrics.spa', 'bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ')
-        replace_in_file('zlink.spa', 'main.bundle.js', r'(lyricsEnabled\(trackHasLyrics)&&\(.*?\)', r'\1')
+        replace_in_file('lyrics.spa', 'lyrics.bundle.js', r'(const anyAbLyricsEnabled = )', r'\1true || ')
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r'(lyricsEnabled\(trackHasLyrics)&&\(.*?\)', r'\1')
         mod_options = r'trackControllerOpts.noService = false;\n'
     elif js_options.getboolean('lyrics_always_show'):
         debug_print("\tEnabled always show lyrics button", 1)
-        replace_in_file('zlink.spa', 'main.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*\)', r'\1true')
+        replace_in_file('zlink.spa', 'zlink.bundle.js', r'(lyricsEnabled\()trackHasLyrics&&\(.*\)', r'\1true')
     if mod_options != "":
-        replace_in_file('lyrics.spa', 'bundle.js', r'(trackController\.init\(trackControllerOpts\))',
+        replace_in_file('lyrics.spa', 'lyrics.bundle.js', r'(trackController\.init\(trackControllerOpts\))',
                         mod_options + r"\1")
 
     inject_js("zlink.spa", "jquery-3.3.1.min.js")
-    replace_in_file('zlink.spa', 'main.bundle.js', r'PlayerUI\.prototype\.setup=function\(\){',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'PlayerUI\.prototype\.setup=function\(\){',
                     'PlayerUI.prototype.setup=function(){chrome.player={};chrome.player.seek=(p)=>{if('
                     'p<=1)p=Math.round(p*(chrome.playerData?chrome.playerData.track.metadata.duration:0));this.seek('
                     'p)};chrome.player.getProgressMs=()=>this.progressbar.getRealValue('
@@ -291,18 +291,18 @@ def mod_js(extensions):
                     'in chrome.player.eventListeners)){return true}var stack=chrome.player.eventListeners['
                     'event.type];for(var i=0,l=stack.length;i<l;i+=1){stack[i](event)}return!event.defaultPrevented};')
     # Leak track meta data, player state, current playlist to chrome.playerData
-    replace_in_file('zlink.spa', 'main.bundle.js', r'const metadata=data\.track\.metadata;',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'const metadata=data\.track\.metadata;',
                     'const metadata=data.track.metadata;chrome.playerData=data;')
     # Leak localStorage and showNotification
-    replace_in_file('zlink.spa', 'main.bundle.js', r'_localStorage2\.default\.get\(SETTINGS_KEY_AD\);',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'_localStorage2\.default\.get\(SETTINGS_KEY_AD\);',
                     '_localStorage2.default.get(SETTINGS_KEY_AD);chrome.localStorage=_localStorage2.default;'
                     'chrome.showNotification = text => {_eventDispatcher2.default.dispatchEvent(new _event2.default('
                     '_event2.default.TYPES.SHOW_NOTIFICATION_BUBBLE, {i18n: text}))};')
     # Leak bridgeAPI
-    replace_in_file('zlink.spa', 'main.bundle.js', r'BuddyList\.prototype\.setup=function\(\){',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'BuddyList\.prototype\.setup=function\(\){',
                     'BuddyList.prototype.setup=function(){chrome.bridgeAPI = _bridge;')
     # Leak audio data fetcher to chrome.getAudioData
-    replace_in_file('zlink.spa', 'main.bundle.js', r'PlayerHelper\.prototype\._player=null',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'PlayerHelper\.prototype\._player=null',
                     'var uriToId=u=>{var t=u.match(/^spotify:track:(.*)/);if(!t||t.length<2)return false;'
                     'else return t[1]};chrome.getAudioData=(callback, uri)=>{uri=uri||chrome.playerData.track.uri;if('
                     'typeof(callback)!=="function"){console.log("chrome.getAudioData: callback has to be a function");'
@@ -312,7 +312,7 @@ def mod_js(extensions):
                     '}else callback(null)})};new Player(cosmos.resolver,"spotify:internal:queue","queue","1.0.0")'
                     '.subscribeToQueue((e,r)=>{if(e){console.log(e);return;}chrome.queue=r.getJSONBody();});'
                     'PlayerHelper.prototype._player=null')
-    replace_in_file('zlink.spa', 'main.bundle.js', r'const Adaptor=function\(bridge,cosmos\)\{',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'const Adaptor=function\(bridge,cosmos\)\{',
                     'const Adaptor=function(bridge,cosmos){chrome.libURI = liburi;chrome.addToQueue=(uri,callback)=>'
                     '{uri=liburi.from(uri);if(uri.type===liburi.Type.ALBUM){this.getAlbumTracks(uri,(err,tracks)=>'
                     '{if(err){console.log("chrome.addToQueue",err);return};this.queueTracks(tracks,callback)})}else '
@@ -327,18 +327,18 @@ def mod_js(extensions):
                     'Track and Episode URIs are accepted")}indices=indices.reduce((a,b)=>{if(a.indexOf(b)<0){a.push('
                     'b)}return a},[]);this.removeTracksFromQueue(indices,callback)}}; ')
     # Register song change event
-    replace_in_file('zlink.spa', 'main.bundle.js', r'this\._uri=track\.uri,this\._trackMetadata=track\.metadata',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'this\._uri=track\.uri,this\._trackMetadata=track\.metadata',
                     'this._uri=track.uri,this._trackMetadata=track.metadata,'
                     'chrome.player&&chrome.player.dispatchEvent(new Event("songchange"))')
     # Register play/pause state change event
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(this\.playing\(data\.is_playing&&!data\.is_paused\).*?;)',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'(this\.playing\(data\.is_playing&&!data\.is_paused\).*?;)',
                     r'\1(this.playing()!==this._isPlaying)&&(this._isPlaying=this.playing(),'
                     r'chrome.player&&chrome.player.dispatchEvent(new Event("onplaypause")));')
     # Register progress change event
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(PlayerUI\.prototype\._onProgressBarProgress=function.*?{)',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'(PlayerUI\.prototype\._onProgressBarProgress=function.*?{)',
                     r'\1chrome.player&&chrome.player.dispatchEvent(new Event("onprogress"));')
     # Leak Cosmos API to chrome.cosmosAPI
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(var _spotifyCosmosApi2=_interop.*?;)',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'(var _spotifyCosmosApi2=_interop.*?;)',
                     r'\1chrome.cosmosAPI=_spotifyCosmosApi2.default;')
 
     for ext in (extensions if extensions is not None else []):
@@ -346,11 +346,11 @@ def mod_js(extensions):
 
 
 def inject_apps(app_page_logger, app_menu_items):
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(PAGE_LOGGER_MAP={)', rf'\1{app_page_logger}')
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(return _pageIdentifiers2\.default\[normalizedAppId\]\|\|)('
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'(PAGE_LOGGER_MAP={)', rf'\1{app_page_logger}')
+    replace_in_file('zlink.spa', 'mzlinkain.bundle.js', r'(return _pageIdentifiers2\.default\[normalizedAppId\]\|\|)('
                                                    r'_pageIdentifiers\.default\.unknownUncovered)',
                     r'\1normalizedAppId||\2')
-    replace_in_file('zlink.spa', 'main.bundle.js', r'(NavigationBar\.prototype\._initCollectionSection=function\(\){)',
+    replace_in_file('zlink.spa', 'zlink.bundle.js', r'(NavigationBar\.prototype\._initCollectionSection=function\(\){)',
                     rf'\1this.sections.push({{id:"custom-apps",label:"Your Apps",items: ko.observableArray(['
                     rf'{app_menu_items}])}});')
 
