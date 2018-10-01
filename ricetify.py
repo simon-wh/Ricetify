@@ -62,8 +62,8 @@ def hex_to_rgb(hex_code):
 
 def get_spotify_version():
     if OS == 'linux':
-        #ver = subprocess.run(["spotify", "--version"], stdout=subprocess.PIPE)
-        return "1.0.88.353.g15c26ea1"
+        ver = subprocess.run(["spotify", "--version"], stdout=subprocess.PIPE)
+        return str(ver.stdout.split()[2][:-1])
     elif OS == 'darwin':
         # TODO find out how to do this
         pass
